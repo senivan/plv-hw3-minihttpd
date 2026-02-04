@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(minihttpd
   src/main.cpp
   src/logger.cpp
+  src/config.cpp
 )
 
-target_include_directories(minihttpd PRIVATE include)
+target_include_directories(minihttpd PRIVATE include third_party)
 target_compile_options(minihttpd PRIVATE -Wall -Wextra -Wpedantic)
