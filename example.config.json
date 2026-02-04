@@ -1,0 +1,13 @@
+{
+  "server_ip": "127.0.0.1",
+  "port": 8080,
+  "max_clients": 128,
+  "root_dir": "./www",
+  "log_file": "./server.log",
+  "log_level": "DEBUG",
+  "keep_alive": true,
+  "keep_alive_timeout_sec": 10,
+  "keep_alive_max_requests": 100,
+  "read_header_max_bytes": 32768,
+  "recv_chunk_size": 65536
+}
