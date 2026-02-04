@@ -1,11 +1,13 @@
 #include "config.hpp"
 #include "logger.hpp"
 #include "http.hpp"
+#include "utils.hpp"
 
 #include <iostream>
+#include <filesystem>
 
 int main(int argc, char** argv) {
-  const char* cfg_path = "../example.config.json";
+  const char* cfg_path = "./config.json";
   if (argc >= 2) cfg_path = argv[1];
 
   try {
@@ -16,46 +18,24 @@ int main(int argc, char** argv) {
       minihttpd::parse_level(cfg.log_level)
     );
 
-    LOG_INFO("Config loaded successfully");
-    LOG_INFO("server_ip=" + cfg.server_ip + " port=" + std::to_string(cfg.port));
+    LOG_INFO("root_dir=" + cfg.root_dir);
 
-    const std::string sample =
-      "GET /files/test.txt?x=1 HTTP/1.1\r\n"
-      "Host: example.com\r\n"
-      "User-Agent: minihttpd-test\r\n"
-      "Connection: keep-alive\r\n"
-      "Content-Length: 123\r\n"
-      "\r\n";
+    std::string raw = "/files/uploads/%2e%2e/secret.txt";
+    std::string decoded = minihttpd::url_decode(raw);
+    LOG_INFO("decoded: " + decoded);
 
-    minihttpd::HttpRequest req;
-    std::string err;
-    if (!minihttpd::parse_http_request_headers(sample, req, err)) {
-      LOG_ERROR("HTTP parse failed: " + err);
-      return 2;
-    }
+    bool ok = false;
+    auto p1 = minihttpd::safe_join_under_root(std::filesystem::path(cfg.root_dir), "uploads/hello.txt", ok);
+    LOG_INFO(std::string("safe_join uploads/hello.txt ok=") + (ok ? "true" : "false") +
+             " path=" + (ok ? p1.string() : "(rejected)"));
 
-    LOG_INFO("HTTP parse OK");
-    LOG_INFO("method=" + req.method);
-    LOG_INFO("target=" + req.target);
-    LOG_INFO("version=" + req.version);
-    LOG_INFO("content_length=" + std::to_string(req.content_length));
+    ok = false;
+    auto p2 = minihttpd::safe_join_under_root(std::filesystem::path(cfg.root_dir), "../evil.txt", ok);
+    LOG_INFO(std::string("safe_join ../evil.txt ok=") + (ok ? "true" : "false"));
 
-    auto host_it = req.headers.find("host");
-    if (host_it != req.headers.end()) LOG_INFO("host=" + host_it->second);
-
-    auto conn_it = req.headers.find("connection");
-    if (conn_it != req.headers.end()) LOG_INFO("connection=" + conn_it->second);
-
-    minihttpd::HttpResponseHead head;
-    head.status = 200;
-    head.reason = minihttpd::status_reason(200);
-    head.headers["Date"] = minihttpd::http_date_now();
-    head.headers["Server"] = "minihttpd";
-    head.headers["Content-Type"] = "text/plain; charset=utf-8";
-    head.headers["Content-Length"] = "5";
-
-    std::string resp_head = minihttpd::build_response_head(head);
-    std::cout << "\n--- Sample response head ---\n" << resp_head << "\n";
+    std::string html = minihttpd::error_page_html(403, "Forbidden", "Nope.");
+    std::cout << "\n--- Sample 403 page (first 200 chars) ---\n"
+              << html.substr(0, 200) << "...\n";
 
     return 0;
   } catch (const std::exception& e) {

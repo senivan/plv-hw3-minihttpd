@@ -1,27 +1,14 @@
 #include "http.hpp"
+#include "utils.hpp"
+
 #include <sstream>
 #include <ctime>
 #include <iomanip>
 #include <vector>
-#include <algorithm>
 #include <cctype>
 #include <limits>
 
 namespace minihttpd {
-
-static std::string trim(const std::string& s) {
-  size_t b = 0;
-  while (b < s.size() && std::isspace((unsigned char)s[b])) b++;
-  size_t e = s.size();
-  while (e > b && std::isspace((unsigned char)s[e - 1])) e--;
-  return s.substr(b, e - b);
-}
-
-static std::string to_lower(const std::string& s) {
-  std::string out = s;
-  for (auto& c : out) c = (char)std::tolower((unsigned char)c);
-  return out;
-}
 
 std::string http_date_now() {
   std::time_t t = std::time(nullptr);
@@ -100,10 +87,7 @@ bool parse_http_request_headers(const std::string& header_blob, HttpRequest& out
     if (pos >= header_blob.size()) break;
   }
 
-  if (lines.empty()) {
-    err = "empty request";
-    return false;
-  }
+  if (lines.empty()) { err = "empty request"; return false; }
   {
     std::istringstream iss(lines[0]);
     if (!(iss >> out.method >> out.target >> out.version)) {
@@ -132,10 +116,7 @@ bool parse_http_request_headers(const std::string& header_blob, HttpRequest& out
     if (ln.empty()) break;
 
     auto p = ln.find(':');
-    if (p == std::string::npos) {
-      err = "bad header line";
-      return false;
-    }
+    if (p == std::string::npos) { err = "bad header line"; return false; }
 
     std::string key = trim(ln.substr(0, p));
     std::string val = trim(ln.substr(p + 1));

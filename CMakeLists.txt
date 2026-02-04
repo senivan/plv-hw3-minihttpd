@@ -13,6 +13,7 @@ add_executable(minihttpd
   src/logger.cpp
   src/config.cpp
   src/http.cpp
+  src/utils.cpp
 )
 
 target_include_directories(minihttpd PRIVATE include third_party)
