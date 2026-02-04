@@ -4,7 +4,7 @@
 Small HTTP server implemented in C++.
 
 ## Requirements
-- [ ] Basic HTTP/1.1 request/response handling
+- [X] Basic HTTP/1.1 request/response handling
 - [ ] Methods: `GET`, `POST`, `DELETE`
 - [ ] Status codes: `200`, `400`, `403`, `404`, `501`, `503` (HTML error pages for errors)
 - [ ] Transfer big files (> 1GB) by streaming (no buffering into RAM)
