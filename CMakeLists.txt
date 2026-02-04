@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(minihttpd
-  src/main.cpp
+  main.cpp
   src/logger.cpp
   src/config.cpp
 )
