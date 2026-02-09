@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
       minihttpd::parse_level(cfg.log_level)
     );
 
-    LOG_INFO("Config loaded.");
+    LOG_INFO("Starting minihttpd");
     minihttpd::HttpServer s(cfg);
     return s.run();
   } catch (const std::exception& e) {

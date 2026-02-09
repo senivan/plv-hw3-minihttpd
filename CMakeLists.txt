@@ -15,6 +15,7 @@ add_executable(minihttpd
   src/http.cpp
   src/utils.cpp
   src/server.cpp
+  src/handlers.cpp
 )
 
 target_include_directories(minihttpd PRIVATE include third_party)
